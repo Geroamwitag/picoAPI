@@ -1,13 +1,11 @@
 from fastapi import FastAPI
 import os
 import psycopg
-from dotenv import load_dotenv
 from fastapi.responses import PlainTextResponse
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 # http://127.0.0.1:8000/text
 
-load_dotenv()
 
 DATABASE_URL = os.environ["ALEKS_DB_URL"]
 
