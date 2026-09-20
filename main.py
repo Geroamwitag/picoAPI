@@ -7,11 +7,9 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 # http://127.0.0.1:8000/text
 
-# 172.17.128.1
 load_dotenv()
 
 DATABASE_URL = os.environ["ALEKS_DB_URL"]
-print(DATABASE_URL)
 
 app = FastAPI()
 
