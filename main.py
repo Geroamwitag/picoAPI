@@ -6,7 +6,7 @@ from fastapi.responses import PlainTextResponse
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
-
+# pico api url: https://picoapi.onrender.com
 DATABASE_URL = os.environ["ALEKS_DB_URL"]
 
 app = FastAPI()
