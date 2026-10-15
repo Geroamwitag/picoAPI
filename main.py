@@ -4,7 +4,7 @@ import os
 import psycopg
 from fastapi.responses import PlainTextResponse
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 # pico api url: https://picoapi.onrender.com
 DATABASE_URL = os.environ["ALEKS_DB_URL"]
@@ -101,6 +101,19 @@ class AppSessionCreate(BaseModel):
     start_time: datetime
     end_time: datetime | None = None
 
+
+
+class ActivityLogCreate(BaseModel):
+    # model_config = ConfigDict(populate_by_name=True)
+
+    accuracy: int
+    actionType: str
+    activityName: str
+    activitySessionID: str
+    latitude: float
+    logType: str
+    longitude: float
+    timestamp: int
 
 
 # -------------------------
@@ -287,6 +300,70 @@ def create_app_session(session: AppSessionCreate):
     return {"message": "App session created", "id": new_id}
 
 
+@app.post("/activity-logs")
+def receive_activity_logs(activity_jsons: list[ActivityLogCreate]):
+# example post request input
+#     [
+#   {
+#     "accuracy": 5,
+#     "actionType": "Start",
+#     "activityName": "Eating",
+#     "activitySessionID": "055277c1-4eb0-4322-a23d-defef8cdfaf4",
+#     "latitude": 37.4219983,
+#     "logType": "Manual",
+#     "longitude": -122.084,
+#     "timestamp": 1791948306916
+#   },
+#   {
+#     "accuracy": 5,
+#     "actionType": "Stop",
+#     "activityName": "Eating",
+#     "activitySessionID": "055277c1-4eb0-4322-a23d-defef8cdfaf4",
+#     "latitude": 37.4219983,
+#     "logType": "Manual",
+#     "longitude": -122.084,
+#     "timestamp": 1791948310163
+#   }
+# ]
+
+    #  id SERIAL PRIMARY KEY,
+    #             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    #             accuracy FLOAT,
+    #             action_type VARCHAR(50),
+    #             activity_name VARCHAR(255),
+    #             activity_session_id VARCHAR(255),
+    #             latitude FLOAT,
+    #             log_type VARCHAR(50),
+    #             longitude FLOAT,
+    #             timestamp BIGINT
+    start_json = activity_jsons[0]
+    end_json = activity_jsons[1]
+
+    insert_row(
+        """
+        INSERT INTO activity_log_test
+            (accuracy, action_type, activity_name, activity_session_id, latitude, log_type, longitude, timestamp)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id
+        """,
+        (
+            start_json.accuracy,
+            start_json.actionType,
+            start_json.activityName,
+            start_json.activitySessionID,
+            start_json.latitude,
+            start_json.logType,
+            start_json.longitude,
+            start_json.timestamp,
+        )
+    )
+
+    return {
+        "success": True,
+        "message": "Activity logs received!",
+        "count": len(activity_jsons)
+    }
 
 
 #
