@@ -26,6 +26,7 @@ Activity tracking:
 ]
 ```
 
+url: https://picoapi.onrender.com/gps-locations
 GPS location:
 ```
 
@@ -39,6 +40,8 @@ GPS location:
   }
 ]
 ```
+
+url: https://picoapi.onrender.com/sleeping-logs
 Sleeping:
 status flag: 0 = Successful, 1 = Missing Data, 2 = Not Detected).
 ```
@@ -62,6 +65,7 @@ status flag: 0 = Successful, 1 = Missing Data, 2 = Not Detected).
 ]
 ```
 
+url: https://picoapi.onrender.com/commute-logs
 Commute (Auto):
 ```
 [
@@ -82,6 +86,7 @@ Commute (Auto):
 ]
 ```
 
+url: https://picoapi.onrender.com/survey_responses
 Survey:
 ```
 {
