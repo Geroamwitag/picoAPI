@@ -5,6 +5,7 @@ import psycopg
 from fastapi.responses import PlainTextResponse
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict
+import json
 
 # pico api url: https://picoapi.onrender.com
 DATABASE_URL = os.environ["ALEKS_DB_URL"]
@@ -104,8 +105,6 @@ class AppSessionCreate(BaseModel):
 
 
 class ActivityLogCreate(BaseModel):
-    # model_config = ConfigDict(populate_by_name=True)
-
     accuracy: int
     actionType: str
     activityName: str
@@ -114,6 +113,44 @@ class ActivityLogCreate(BaseModel):
     logType: str
     longitude: float
     timestamp: int
+
+
+
+from typing import Any
+from pydantic import BaseModel, Field
+from uuid import UUID
+
+
+class GPSLocationCreate(BaseModel):
+    id: int
+    accuracy: float
+    latitude: float
+    longitude: float
+    timestamp: int
+
+
+class SleepingLogCreate(BaseModel):
+    actionType: str
+    activityName: str
+    activitySessionID: str
+    logType: str
+    status: int
+    timestamp: int
+
+
+class CommuteLogCreate(BaseModel):
+    actionType: str
+    activityName: str
+    activitySessionID: str
+    logType: str
+    timestamp: int
+
+
+class SurveyResponseCreate(BaseModel):
+    activities: list[dict[str, Any]]
+    satisfactionScore: int
+    surveyDate: str
+    surveyTimestamp: int
 
 
 # -------------------------
@@ -300,70 +337,273 @@ def create_app_session(session: AppSessionCreate):
     return {"message": "App session created", "id": new_id}
 
 
+# RAW DATA APIS
 @app.post("/activity-logs")
 def receive_activity_logs(activity_jsons: list[ActivityLogCreate]):
-# example post request input
-#     [
-#   {
-#     "accuracy": 5,
-#     "actionType": "Start",
-#     "activityName": "Eating",
-#     "activitySessionID": "055277c1-4eb0-4322-a23d-defef8cdfaf4",
-#     "latitude": 37.4219983,
-#     "logType": "Manual",
-#     "longitude": -122.084,
-#     "timestamp": 1791948306916
-#   },
-#   {
-#     "accuracy": 5,
-#     "actionType": "Stop",
-#     "activityName": "Eating",
-#     "activitySessionID": "055277c1-4eb0-4322-a23d-defef8cdfaf4",
-#     "latitude": 37.4219983,
-#     "logType": "Manual",
-#     "longitude": -122.084,
-#     "timestamp": 1791948310163
-#   }
-# ]
+    """
+    EXAMPLE INPUT
 
-    #  id SERIAL PRIMARY KEY,
-    #             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    #             accuracy FLOAT,
-    #             action_type VARCHAR(50),
-    #             activity_name VARCHAR(255),
-    #             activity_session_id VARCHAR(255),
-    #             latitude FLOAT,
-    #             log_type VARCHAR(50),
-    #             longitude FLOAT,
-    #             timestamp BIGINT
-    start_json = activity_jsons[0]
-    end_json = activity_jsons[1]
-
-    insert_row(
-        """
-        INSERT INTO activity_log_test
-            (accuracy, action_type, activity_name, activity_session_id, latitude, log_type, longitude, timestamp)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        RETURNING id
-        """,
-        (
-            start_json.accuracy,
-            start_json.actionType,
-            start_json.activityName,
-            start_json.activitySessionID,
-            start_json.latitude,
-            start_json.logType,
-            start_json.longitude,
-            start_json.timestamp,
+    [
+    {
+        "accuracy": 5,
+        "actionType": "Start",
+        "activityName": "Eating",
+        "activitySessionID": "055277c1-4eb0-4322-a23d-defef8cdfaf4",
+        "latitude": 37.4219983,
+        "logType": "Manual",
+        "longitude": -122.084,
+        "timestamp": 1791948306916
+    },
+    {
+        "accuracy": 5,
+        "actionType": "Stop",
+        "activityName": "Eating",
+        "activitySessionID": "055277c1-4eb0-4322-a23d-defef8cdfaf4",
+        "latitude": 37.4219983,
+        "logType": "Manual",
+        "longitude": -122.084,
+        "timestamp": 1791948310163
+    }
+    ]
+    """
+    for activity_json in activity_jsons:
+        insert_row(
+            """
+            INSERT INTO activity_log_test
+                (accuracy, action_type, activity_name, activity_session_id, latitude, log_type, longitude, timestamp)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
+            """,
+            (
+                activity_json.accuracy,
+                activity_json.actionType,
+                activity_json.activityName,
+                activity_json.activitySessionID,
+                activity_json.latitude,
+                activity_json.logType,
+                activity_json.longitude,
+                activity_json.timestamp,
+            )
         )
-    )
 
     return {
         "success": True,
         "message": "Activity logs received!",
         "count": len(activity_jsons)
     }
+
+
+
+@app.post("/gps-locations")
+def receive_gps_locations(location_jsons: list[GPSLocationCreate]):
+    """
+    EXAMPLE INPUT
+
+    [
+    {
+        "accuracy": 12.5,
+        "id": 1,
+        "latitude": 51.4416,
+        "longitude": 5.4697,
+        "timestamp": 1791942084255
+    }
+    ]
+    """
+    for location in location_jsons:
+        insert_row(
+            """
+            INSERT INTO gps_locations
+                (id, accuracy, latitude, longitude, timestamp)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id
+            """,
+            (
+                location.id,
+                location.accuracy,
+                location.latitude,
+                location.longitude,
+                location.timestamp,
+            )
+        )
+
+    return {
+        "success": True,
+        "message": "GPS locations received!",
+        "count": len(location_jsons)
+    }
+
+
+
+@app.post("/sleeping-logs")
+def receive_sleeping_logs(sleeping_jsons: list[SleepingLogCreate]):
+    """
+    EXAMPLE INPUT
+
+    [
+    {
+        "actionType": "Start",
+        "activityName": "Sleeping",
+        "activitySessionID": "849815b8-35a2-4f18-b17d-7e7afa8e2c2b",
+        "logType": "Auto",
+        "status": 0,
+        "timestamp": 1791913277834
+    },
+    {
+        "actionType": "Stop",
+        "activityName": "Sleeping",
+        "activitySessionID": "849815b8-35a2-4f18-b17d-7e7afa8e2c2b",
+        "logType": "Auto",
+        "status": 0,
+        "timestamp": 1791942077834
+    }
+    ]
+    """
+    for log in sleeping_jsons:
+        insert_row(
+            """
+            INSERT INTO sleeping_logs
+                (
+                    action_type,
+                    activity_name,
+                    activity_session_id,
+                    log_type,
+                    status,
+                    timestamp
+                )
+            VALUES (%s, %s, %s, %s, %s, %s)
+            RETURNING id
+            """,
+            (
+                log.actionType,
+                log.activityName,
+                str(log.activitySessionID),
+                log.logType,
+                log.status,
+                log.timestamp,
+            )
+        )
+
+    return {
+        "success": True,
+        "message": "Sleeping logs received!",
+        "count": len(sleeping_jsons)
+    }
+
+
+
+@app.post("/commute-logs")
+def receive_commute_logs(commute_jsons: list[CommuteLogCreate]):
+    """
+    EXAMPLE INPUT
+
+    [
+    {
+        "actionType": "Start",
+        "activityName": "Commuting (In Vehicle)",
+        "activitySessionID": "cc0a5476-19b1-4c89-b8fe-39c327f51b1c",
+        "logType": "Auto",
+        "timestamp": 1791941999238
+    },
+    {
+        "actionType": "Stop",
+        "activityName": "Commuting (In Vehicle)",
+        "activitySessionID": "cc0a5476-19b1-4c89-b8fe-39c327f51b1c",
+        "logType": "Auto",
+        "timestamp": 1791943799238
+    }
+    ]
+    """
+    for log in commute_jsons:
+        insert_row(
+            """
+            INSERT INTO commute_logs
+                (
+                    action_type,
+                    activity_name,
+                    activity_session_id,
+                    log_type,
+                    timestamp
+                )
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id
+            """,
+            (
+                log.actionType,
+                log.activityName,
+                str(log.activitySessionID),
+                log.logType,
+                log.timestamp,
+            )
+        )
+
+    return {
+        "success": True,
+        "message": "Commute logs received!",
+        "count": len(commute_jsons)
+    }
+
+
+
+@app.post("/survey-responses")
+def receive_survey_response(survey: SurveyResponseCreate):
+    """
+    EXAMPLE INPUT
+
+    {
+    "activities": [
+        {
+        "activityName": "Sleeping",
+        "actualHours": 0,
+        "targetHours": 8
+        },
+        {
+        "activityName": "Studying",
+        "actualHours": 0,
+        "targetHours": 3
+        },
+        {
+        "activityName": "Doing Sports",
+        "actualHours": 0,
+        "targetHours": 1
+        },
+        {
+        "activityName": "Pursue Hobbies",
+        "actualHours": 0,
+        "targetHours": 2
+        }
+    ],
+    "satisfactionScore": 9,
+    "surveyDate": "2026-10-287",
+    "surveyTimestamp": 1791946954947
+    }
+    """
+    insert_row(
+        """
+        INSERT INTO survey_responses
+            (
+                activities,
+                satisfaction_score,
+                survey_date,
+                survey_timestamp
+            )
+        VALUES (%s::jsonb, %s, %s, %s)
+        RETURNING id
+        """,
+        (
+            json.dumps(survey.activities),
+            survey.satisfactionScore,
+            survey.surveyDate,
+            survey.surveyTimestamp,
+        )
+    )
+
+    return {
+        "success": True,
+        "message": "Survey response received!",
+        "count": 1
+    }
+
+
 
 
 #
