@@ -1,5 +1,5 @@
 ## JSON format:
-url: https://picoapi.onrender.com/activity-logs
+#url: https://picoapi.onrender.com/activity-logs
 Activity tracking:
 
 actionType is for Start - Stop/End session.
