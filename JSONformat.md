@@ -1,21 +1,42 @@
-## JSON format:
-#url: https://picoapi.onrender.com/activity-logs
-Activity tracking:
+# PicoAPI JSON Format
 
-actionType is for Start - Stop/End session.
-activitySessionID is a unique ID for each session; a start and stop log for the same activity will carry the same session ID ALWAYS! (fingerprint for each session)
-detectionMethod tells if the log was manually inputted by the user or an auto-trigger by the app! Manual/Auto.
-installationId is a user-unique ID, as suggested by Omar! (prevents mixing test users and the real user)
-logType:
-{
-This can be **Activity**; for the 4 activities logged by the user "(Eating, Studying, Doing Sports, Pursue Hobbies)".
-or **Location**; for auto-logged GPS coordinates every 15 mins
-or **Sleeping**; for auto-logged sleep sessions
-or **Commuting**; for auto-logged commuting sessions
-or **Survey**; for survey data logging, can be manual or auto!
-}
-timestamp: Unix epoch time, a conversion example found online in Python (please double-check!):
-```
+## Table of Contents
+
+- [Activity Tracking](#activity-tracking)
+- [GPS Location](#gps-location)
+- [Sleeping](#sleeping)
+- [Commute](#commute-auto)
+- [Survey](#survey)
+- [Data Types](#data-types)
+
+---
+
+## Activity Tracking
+
+**URL:** `https://picoapi.onrender.com/activity-logs`
+
+### Field descriptions
+
+- `actionType` is for Start - Stop/End session.
+- `activitySessionID` is a unique ID for each session; a start and stop log for the same activity will carry the same session ID ALWAYS! (fingerprint for each session)
+- `detectionMethod` tells if the log was manually inputted by the user or an auto-trigger by the app! Manual/Auto.
+- `installationId` is a user-unique ID, as suggested by Omar! (prevents mixing test users and the real user)
+
+### `logType`
+
+This can be:
+
+- **Activity**; for the 4 activities logged by the user "(Eating, Studying, Doing Sports, Pursue Hobbies)".
+- **Location**; for auto-logged GPS coordinates every 15 mins.
+- **Sleeping**; for auto-logged sleep sessions.
+- **Commuting**; for auto-logged commuting sessions.
+- **Survey**; for survey data logging, can be manual or auto!
+
+### `timestamp`
+
+Unix epoch time, a conversion example found online in Python (please double-check!):
+
+```python
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -34,7 +55,9 @@ print(readable_time)
 # Output: 2026-10-25 17:01:10
 ```
 
-```
+### Example
+
+```json
 [
   {
     "accuracy": 100,
@@ -63,19 +86,26 @@ print(readable_time)
 ]
 ```
 
-url: https://picoapi.onrender.com/gps-locations
-GPS location:
+---
 
-What "accuracy": 100 Actually Means:
+## GPS Location
 
-Unit: Meters (Radius of 68% confidence circle).
-100 means there is a 68% probability that your true real-world location is within a 100-meter radius circle around the recorded latitude and longitude.
-Smaller Numbers = MORE Accurate:
-"accuracy": 5.0 -> High precision! (Accurate within 5 meters)
-"accuracy": 12.5 -> Good outdoor GPS fix! (Accurate within 12.5 meters).
-"accuracy": 100.0 -> Low precision! (Accurate only within 100 meters. Usually obtained indoors from Cell Towers or Wi-Fi when satellite signals are blocked).
-```
+**URL:** `https://picoapi.onrender.com/gps-locations`
 
+### What `"accuracy": 100` Actually Means
+
+- **Unit:** Meters (Radius of 68% confidence circle).
+- `100` means there is a 68% probability that your true real-world location is within a 100-meter radius circle around the recorded latitude and longitude.
+
+### Smaller Numbers = MORE Accurate
+
+- `"accuracy": 5.0` -> High precision! (Accurate within 5 meters)
+- `"accuracy": 12.5` -> Good outdoor GPS fix! (Accurate within 12.5 meters).
+- `"accuracy": 100.0` -> Low precision! (Accurate only within 100 meters. Usually obtained indoors from Cell Towers or Wi-Fi when satellite signals are blocked).
+
+### Example
+
+```json
 [
   {
     "accuracy": 100,
@@ -89,11 +119,23 @@ Smaller Numbers = MORE Accurate:
 ]
 ```
 
-url: https://picoapi.onrender.com/sleeping-logs
-Sleeping:
-status flag: 0 = Successful, 1 = Missing Data, 2 = Not Detected).
+---
+
+## Sleeping
+
+**URL:** `https://picoapi.onrender.com/sleeping-logs`
+
+### Status flag
+
+- `0` = Successful
+- `1` = Missing Data
+- `2` = Not Detected
+
 In short, keep the status flag 0 logs and drop the others! Or get creative here :)
-```
+
+### Example
+
+```json
 [
   {
     "accuracy": 12.5,
@@ -124,16 +166,23 @@ In short, keep the status flag 0 logs and drop the others! Or get creative here 
 ]
 ```
 
-url: https://picoapi.onrender.com/commute-logs
-Commute (Auto):
+---
 
-**activityName options:**
-"Commuting (In Vehicle)" — Triggered when driving a car, riding a bus, train, or motor vehicle (DetectedActivity.IN_VEHICLE).
-"Commuting (On Bicycle)" — Triggered when riding a bicycle or cycling (DetectedActivity.ON_BICYCLE).
-"Commuting (Walking)" — Triggered when walking (DetectedActivity.WALKING).
-"Commuting (Running)" — Triggered when running or jogging (DetectedActivity.RUNNING).
-"Commuting" — Generic fallback for any unclassified motion transition.
-```
+## Commute (Auto)
+
+**URL:** `https://picoapi.onrender.com/commute-logs`
+
+### `activityName` options
+
+- `"Commuting (In Vehicle)"` — Triggered when driving a car, riding a bus, train, or motor vehicle (DetectedActivity.IN_VEHICLE).
+- `"Commuting (On Bicycle)"` — Triggered when riding a bicycle or cycling (DetectedActivity.ON_BICYCLE).
+- `"Commuting (Walking)"` — Triggered when walking or jogging (DetectedActivity.WALKING).
+- `"Commuting (Running)"` — Triggered when running or jogging (DetectedActivity.RUNNING).
+- `"Commuting"` — Generic fallback for any unclassified motion transition.
+
+### Example
+
+```json
 [
   {
     "accuracy": 12.5,
@@ -162,11 +211,19 @@ Commute (Auto):
 ]
 ```
 
-url: https://picoapi.onrender.com/survey_responses
-Survey:
+---
 
-satisfactionScore = 99. Code means that this log was auto-submitted because there was remaining or cross-day active activity, so it can be calculated correctly! This is marked as an auto log! It will submit the remaining hours that were not submitted by the user by the end of the day. The score should not be used; only take activity hours and add them up!
-```
+## Survey
+
+**URL:** `https://picoapi.onrender.com/survey_responses`
+
+### Satisfaction score
+
+`satisfactionScore = 99`. The code means that this log was auto-submitted because there was remaining or cross-day active activity, so it can be calculated correctly! This is marked as an auto log! It submits the remaining hours the user didn't submit by the end of the day. Don't use the score; just add up the activity hours!
+
+### Example
+
+```json
 {
   "activities": [
     {
@@ -199,56 +256,60 @@ satisfactionScore = 99. Code means that this log was auto-submitted because ther
 }
 ```
 
+---
 
-**DATA TYPES:**
-**General Activity Logs Payload**
-•
-"activitySessionID": String (UUID string, e.g. "aeda82a5-4583-4a09-a2f7-9f03d81bc4cd")
-"activityName": String (e.g. "Eating", "Studying", "Commuting (In Vehicle)")
-"actionType": String (e.g. "Start" or "Stop")
-"timestamp": Number (Long Integer) (Unix epoch time in milliseconds, e.g. 1792941035011)
-"logType": String (e.g. "Activity" or "Commuting")
-"detectionMethod": String (e.g. "Manual" or "Auto")
-"latitude": Number (Float/Double) or null (e.g. 51.4686011)
-"longitude": Number (Float/Double) or null (e.g. 5.4717419)
-"accuracy": Number (Float/Double) or null (e.g. 16.685)
-"installationId": String (UUID string, e.g. "b7290588-dafb-4962-b75f-0c96881c024a")
+# Data Types
 
-**Auto Sleep Logs Payload**
-•
-"activitySessionID": String (UUID string, e.g. "96ab2ec7-e69f-47c4-9625-de6606491e23")
-"activityName": String (Constant "Sleeping")
-"actionType": String (e.g. "Start" or "Stop")
-"timestamp": Number (Long Integer) (Unix epoch time in milliseconds, e.g. 1792747599340)
-"logType": String (Constant "Sleeping")
-"detectionMethod": String (Constant "Auto")
-"latitude": Number (Float/Double) or null (e.g. 51.4416)
-"longitude": Number (Float/Double) or null (e.g. 5.4697)
-"accuracy": Number (Float/Double) or null (e.g. 12.5)
-"status": Number (Integer) or null (Google Sleep API status flag: 0 = Successful, 1 = Missing, 2 = Not Detected)
-"installationId": String (UUID string, e.g. "b7290588-dafb-4962-b75f-0c96881c024a")
+## General Activity Logs Payload
 
-**Background GPS Locations Payload**
-•
-"logType": String (Constant "Location")
-"detectionMethod": String (Constant "Auto")
-"latitude": Number (Float/Double) (e.g. 51.4685507)
-"longitude": Number (Float/Double) (e.g. 5.4718295)
-"accuracy": Number (Float/Double) (e.g. 12.5)
-"timestamp": Number (Long Integer) (Unix epoch time in milliseconds, e.g. 1792774488530)
-"installationId": String (UUID string, e.g. "b7290588-dafb-4962-b75f-0c96881c024a")
+- `"activitySessionID": String (UUID string, e.g. "aeda82a5-4583-4a09-a2f7-9f03d81bc4cd")`
+- `"activityName": String (e.g. "Eating", "Studying", "Commuting (In Vehicle)")`
+- `"actionType": String (e.g. "Start" or "Stop")`
+- `"timestamp": Number (Long Integer) (Unix epoch time in milliseconds, e.g. 1792941035011)`
+- `"logType": String (e.g. "Activity" or "Commuting")`
+- `"detectionMethod": String (e.g. "Manual" or "Auto")`
+- `"latitude": Number (Float/Double) or null (e.g. 51.4686011)`
+- `"longitude": Number (Float/Double) or null (e.g. 5.4717419)`
+- `"accuracy": Number (Float/Double) or null (e.g. 16.685)`
+- `"installationId": String (UUID string, e.g. "b7290588-dafb-4962-b75f-0c96881c024a")`
 
-**Daily Satisfaction Survey Payload**
-•
-"surveyDate": String (Date string in "yyyy-MM-dd" format, e.g. "2026-10-22")
-"surveyTimestamp": Number (Long Integer) (Unix epoch time in milliseconds, e.g. 1792762106409)
-"logType": String (Constant "Survey")
-"detectionMethod": String (e.g. "Manual" for user survey, or "Auto" for day-reset reconciliation)
-"satisfactionScore": Number (Integer) (Score 1 to 10 for user survey, or 99 for auto-reconciliation)
-"installationId": String (UUID string, e.g. "b7290588-dafb-4962-b75f-0c96881c024a")
-"activities": Array of Objects, where each object contains:
-"activityName": String (e.g. "Sleeping", "Studying", "Doing Sports", "Pursue Hobbies")
-"targetHours": Number (Float/Double) (e.g. 8.0, 3.0)
-"actualHours": Number (Float/Double) (e.g. 7.5, 2.0)
+## Auto Sleep Logs Payload
 
-END!
+- `"activitySessionID": String (UUID string, e.g. "96ab2ec7-e69f-47c4-9625-de6606491e23")`
+- `"activityName": String (Constant "Sleeping")`
+- `"actionType": String (e.g. "Start" or "Stop")`
+- `"timestamp": Number (Long Integer) (Unix epoch time in milliseconds, e.g. 1792747599340)`
+- `"logType": String (Constant "Sleeping")`
+- `"detectionMethod": String (Constant "Auto")`
+- `"latitude": Number (Float/Double) or null (e.g. 51.4416)`
+- `"longitude": Number (Float/Double) or null (e.g. 5.4697)`
+- `"accuracy": Number (Float/Double) or null (e.g. 12.5)`
+- `"status": Number (Integer) or null (Google Sleep API status flag: 0 = Successful, 1 = Missing, 2 = Not Detected)`
+- `"installationId": String (UUID string, e.g. "b7290588-dafb-4962-b75f-0c96881c024a")`
+
+## Background GPS Locations Payload
+
+- `"logType": String (Constant "Location")`
+- `"detectionMethod": String (Constant "Auto")`
+- `"latitude": Number (Float/Double) (e.g. 51.4685507)`
+- `"longitude": Number (Float/Double) (e.g. 5.4718295)`
+- `"accuracy": Number (Float/Double) (e.g. 12.5)`
+- `"timestamp": Number (Long Integer) (Unix epoch time in milliseconds, e.g. 1792774488530)`
+- `"installationId": String (UUID string, e.g. "b7290588-dafb-4962-b75f-0c96881c024a")`
+
+## Daily Satisfaction Survey Payload
+
+- `"surveyDate": String (Date string in "yyyy-MM-dd" format, e.g. "2026-10-22")`
+- `"surveyTimestamp": Number (Long Integer) (Unix epoch time in milliseconds, e.g. 1792762106409)`
+- `"logType": String (Constant "Survey")`
+- `"detectionMethod": String (e.g. "Manual" for user survey, or "Auto" for day-reset reconciliation)`
+- `"satisfactionScore": Number (Integer) (Score 1 to 10 for user survey, or 99 for auto-reconciliation)`
+- `"installationId": String (UUID string, e.g. "b7290588-dafb-4962-b75f-0c96881c024a")`
+- `"activities": Array of Objects, where each object contains:`
+  - `"activityName": String (e.g. "Sleeping", "Studying", "Doing Sports", "Pursue Hobbies")`
+  - `"targetHours": Number (Float/Double) (e.g. 8.0, 3.0)`
+  - `"actualHours": Number (Float/Double) (e.g. 7.5, 2.0)`
+
+---
+
+**END!**
