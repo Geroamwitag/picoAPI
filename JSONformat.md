@@ -115,7 +115,7 @@ print(readable_time)
     "logType": "Location",
     "longitude": 5.4720262,
     "timestamp": 1792943777566
-  },
+  }
 ]
 ```
 
