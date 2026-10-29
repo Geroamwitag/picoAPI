@@ -93,7 +93,10 @@ print(readable_time)
 
 ## GPS Location
 
-**URL:** `https://picoapi.onrender.com/gps-locations`
+**URL:** 
+```
+https://picoapi.onrender.com/gps-locations
+```
 
 ### What `"accuracy": 100` Actually Means
 
@@ -126,7 +129,10 @@ print(readable_time)
 
 ## Sleeping
 
-**URL:** `https://picoapi.onrender.com/sleeping-logs`
+**URL:** 
+```
+https://picoapi.onrender.com/sleeping-logs
+```
 
 ### Status flag
 
@@ -173,7 +179,10 @@ In short, keep the status flag 0 logs and drop the others! Or get creative here 
 
 ## Commute (Auto)
 
-**URL:** `https://picoapi.onrender.com/activity-logs`
+**URL:** 
+```
+https://picoapi.onrender.com/activity-logs
+```
 
 ### `activityName` options
 
@@ -218,7 +227,10 @@ In short, keep the status flag 0 logs and drop the others! Or get creative here 
 
 ## Survey
 
-**URL:** `https://picoapi.onrender.com/survey_responses`
+**URL:** 
+```
+https://picoapi.onrender.com/survey_responses
+```
 
 ### Satisfaction score
 
