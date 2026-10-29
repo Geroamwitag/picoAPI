@@ -13,7 +13,10 @@
 
 ## Activity Tracking
 
-**URL:** `https://picoapi.onrender.com/activity-logs`
+**URL:** 
+```
+https://picoapi.onrender.com/activity-logs
+```
 
 ### Field descriptions
 

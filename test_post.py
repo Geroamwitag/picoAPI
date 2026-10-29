@@ -2,7 +2,7 @@ import requests
 
 
 def main():
-    test_activity_logs_post()
+    multiple_post_requests(10)
 
 
 def test_activity_logs_post():
@@ -43,14 +43,18 @@ def test_activity_logs_post():
             timeout=30
         )
 
-        print("Status code:", response.status_code)
+        print("Status code:", response.status_code) 
         print("Response:", response.text)
 
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
         print("Request failed:", e)
-    
+
+
+def multiple_post_requests(n: int):
+    for request in range(n):
+        test_activity_logs_post()
 
 if __name__ == "__main__":
     main()
