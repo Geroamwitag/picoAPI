@@ -170,7 +170,7 @@ In short, keep the status flag 0 logs and drop the others! Or get creative here 
 
 ## Commute (Auto)
 
-**URL:** `https://picoapi.onrender.com/commute-logs`
+**URL:** `https://picoapi.onrender.com/activity-logs`
 
 ### `activityName` options
 
