@@ -358,6 +358,37 @@ def create_app_session(session: AppSessionCreate):
 # RAW DATA APIS
 @app.post("/activity-logs")
 def receive_activity_logs(activity_jsons: list[ActivityLogCreate]):
+    """
+    Example Payload
+    ```json
+    [
+            {
+                "accuracy": 100,
+                "actionType": "Start",
+                "activityName": "Studying",
+                "activitySessionID": "286bc38d-bed0-4faa-9ed1-4f5d3effb800",
+                "detectionMethod": "Manual",
+                "installationId": "221beb5c-adde-4b4d-b95b-1fe7c23eb0a9",
+                "latitude": 51.4685915,
+                "logType": "Activity",
+                "longitude": 5.4720262,
+                "timestamp": 1792944070458
+            },
+            {
+                "accuracy": 100,
+                "actionType": "Stop",
+                "activityName": "Studying",
+                "activitySessionID": "286bc38d-bed0-4faa-9ed1-4f5d3effb800",
+                "detectionMethod": "Manual",
+                "installationId": "221beb5c-adde-4b4d-b95b-1fe7c23eb0a9",
+                "latitude": 51.4685915,
+                "logType": "Activity",
+                "longitude": 5.4720262,
+                "timestamp": 1792944190458
+            }
+        ]
+    ```
+    """
     for log in activity_jsons:
         insert_row(
             """
@@ -399,6 +430,22 @@ def receive_activity_logs(activity_jsons: list[ActivityLogCreate]):
 
 @app.post("/gps-locations")
 def receive_gps_locations(location_jsons: list[GPSLocationCreate]):
+    """
+    Example Payload
+    ```json
+    [   
+    {
+        "accuracy": 100,
+        "detectionMethod": "Auto",
+        "installationId": "221beb5c-adde-4b4d-b95b-1fe7c23eb0a9",
+        "latitude": 51.4685915,
+        "logType": "Location",
+        "longitude": 5.4720262,
+        "timestamp": 1792943777566
+    }
+    ]
+    ```
+    """
     for location in location_jsons:
         insert_row(
             """
@@ -437,6 +484,7 @@ def receive_sleeping_logs(sleeping_jsons: list[SleepingLogCreate]):
     """
     EXAMPLE INPUT
 
+    ```json
     [
     {
     "activities": [
@@ -469,6 +517,7 @@ def receive_sleeping_logs(sleeping_jsons: list[SleepingLogCreate]):
     "surveyTimestamp": 1792944276995
     }
     ]
+    ```
     """
     for log in sleeping_jsons:
         insert_row(
@@ -513,6 +562,37 @@ def receive_sleeping_logs(sleeping_jsons: list[SleepingLogCreate]):
 
 @app.post("/commute-logs")
 def receive_commute_logs(commute_jsons: list[CommuteLogCreate]):
+    """
+    Example Payload
+    ```json
+    [
+    {
+        "accuracy": 12.5,
+        "actionType": "Start",
+        "activityName": "Commuting (In Vehicle)",
+        "activitySessionID": "0891537b-d355-4033-b683-e33dda199653",
+        "detectionMethod": "Auto",
+        "installationId": "221beb5c-adde-4b4d-b95b-1fe7c23eb0a9",
+        "latitude": 51.4416,
+        "logType": "Commuting",
+        "longitude": 5.4697,
+        "timestamp": 1792942301236
+    },
+    {
+        "accuracy": 12.5,
+        "actionType": "Stop",
+        "activityName": "Commuting (In Vehicle)",
+        "activitySessionID": "0891537b-d355-4033-b683-e33dda199653",
+        "detectionMethod": "Auto",
+        "installationId": "221beb5c-adde-4b4d-b95b-1fe7c23eb0a9",
+        "latitude": 51.4416,
+        "logType": "Commuting",
+        "longitude": 5.4697,
+        "timestamp": 1792944101236
+    }
+    ]
+    ```
+    """
     for log in commute_jsons:
         insert_row(
             """
@@ -554,6 +634,41 @@ def receive_commute_logs(commute_jsons: list[CommuteLogCreate]):
 
 @app.post("/survey_responses")
 def receive_survey_response(survey: SurveyResponseCreate):
+    """
+    Example Payload
+    ```json
+    {
+    "activities": [
+        {
+        "activityName": "Sleeping",
+        "actualHours": 8,
+        "targetHours": 8
+        },
+        {
+        "activityName": "Studying",
+        "actualHours": 0.03333333333333333,
+        "targetHours": 3
+        },
+        {
+        "activityName": "Doing Sports",
+        "actualHours": 0,
+        "targetHours": 1
+        },
+        {
+        "activityName": "Pursue Hobbies",
+        "actualHours": 0,
+        "targetHours": 2
+        }
+    ],
+    "detectionMethod": "Manual",
+    "installationId": "221beb5c-adde-4b4d-b95b-1fe7c23eb0a9",
+    "logType": "Survey",
+    "satisfactionScore": 3,
+    "surveyDate": "2026-10-25",
+    "surveyTimestamp": 1792944276995
+    }
+    ```
+    """
     insert_row(
         """
         INSERT INTO survey_responses (
