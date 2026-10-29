@@ -104,71 +104,70 @@ class AppSessionCreate(BaseModel):
 
 
 ## Raw models
-
 class ActivityLogCreate(BaseModel):
-    accuracy: float
-    actionType: str
-    activityName: str
-    activitySessionID: str
-    detectionMethod: str
-    installationId: str
-    latitude: float
-    logType: str
-    longitude: float
-    timestamp: int
+    accuracy: float | None = None
+    actionType: str | None = None
+    activityName: str | None = None
+    activitySessionID: str | None = None
+    detectionMethod: str | None = None
+    installationId: str | None = None
+    latitude: float | None = None
+    logType: str | None = None
+    longitude: float | None = None
+    timestamp: int | None = None
 
 
 class GPSLocationCreate(BaseModel):
-    accuracy: float
-    detectionMethod: str
-    installationId: str
-    latitude: float
-    logType: str
-    longitude: float
-    timestamp: int
+    accuracy: float | None = None
+    detectionMethod: str | None = None
+    installationId: str | None = None
+    latitude: float | None = None
+    logType: str | None = None
+    longitude: float | None = None
+    timestamp: int | None = None
 
 
 class SleepingLogCreate(BaseModel):
-    accuracy: float
-    actionType: str
-    activityName: str
-    activitySessionID: str
-    detectionMethod: str
-    installationId: str
-    latitude: float
-    logType: str
-    longitude: float
-    status: int
-    timestamp: int
+    accuracy: float | None = None
+    actionType: str | None = None
+    activityName: str | None = None
+    activitySessionID: str | None = None
+    detectionMethod: str | None = None
+    installationId: str | None = None
+    latitude: float | None = None
+    logType: str | None = None
+    longitude: float | None = None
+    status: int | None = None
+    timestamp: int | None = None
 
 
 class CommuteLogCreate(BaseModel):
-    accuracy: float
-    actionType: str
-    activityName: str
-    activitySessionID: str
-    detectionMethod: str
-    installationId: str
-    latitude: float
-    logType: str
-    longitude: float
-    timestamp: int
+    accuracy: float | None = None
+    actionType: str | None = None
+    activityName: str | None = None
+    activitySessionID: str | None = None
+    detectionMethod: str | None = None
+    installationId: str | None = None
+    latitude: float | None = None
+    logType: str | None = None
+    longitude: float | None = None
+    timestamp: int | None = None
 
 
 class SurveyActivity(BaseModel):
-    activityName: str
-    actualHours: float
-    targetHours: float
+    activityName: str | None = None
+    actualHours: float | None = None
+    targetHours: float | None = None 
 
 
 class SurveyResponseCreate(BaseModel):
-    activities: list[SurveyActivity]
-    detectionMethod: str
-    installationId: str
-    logType: str
-    satisfactionScore: int
-    surveyDate: str
-    surveyTimestamp: int
+    activities: list[SurveyActivity] | None = None
+    detectionMethod: str | None = None
+    installationId: str | None = None
+    logType: str | None = None
+    satisfactionScore: int | None = None
+    surveyDate: str | None = None
+    surveyTimestamp: int | None = None
 
 
 # -------------------------
